@@ -1,0 +1,15 @@
+SELECT DISTINCT(CustomerID),InvoiceDate,Country,Quantity,Description, ROW_NUMBER () over (partition by (invoiceDate))
+FROM data$
+
+
+SELECT invoiceDateConverted, CONVERT(date,invoiceDate)
+FROM data$
+
+update data$
+set InvoiceDate=CONVERT(date,invoiceDate)
+
+ALTER Table data$
+Add invoiceDateConverted Date;
+
+update data$
+set invoiceDateConverted=CONVERT(date,invoiceDate)
