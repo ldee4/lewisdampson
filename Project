@@ -1,0 +1,68 @@
+SELECT *
+FROM CovidDeaths$
+
+
+SELECT date,location,new_vaccinations,total_vaccinations
+FROM CovidVaccinations$
+where location like '%ghana%'
+
+order by date
+
+SELECT location,date,total_cases,new_cases,total_deaths,new_deaths,population
+FROM CovidDeaths$
+ORDER BY 1,2
+
+--Total cases vs total deaths
+--Likelihood of dying from covid
+
+SELECT location,date,total_cases,total_deaths,new_deaths, (total_deaths/total_cases)*100 AS PercentageDeaths
+FROM CovidDeaths$
+Where location like '%Ghana%'
+ORDER BY 1,2
+
+--Total cases vs population in Ghana
+
+SELECT location,date,total_cases,population, (total_cases/population)*100 AS PercentageCasesByPop
+FROM CovidDeaths$
+Where location like '%Ghana%'
+ORDER BY 1,2
+
+
+
+--Total death vs population in Ghana
+
+SELECT location,date,total_deaths,population, (total_deaths/population)*100 AS PercentageDeathByPop
+FROM CovidDeaths$
+Where location like '%Ghana%'
+ORDER BY 1,2
+
+
+--Highest Infection by Country
+
+SELECT location,population,MAX(total_cases) AS HighestInfected, MAX((total_cases/population))*100 AS PercentPopulationInfected
+FROM CovidDeaths$
+--Where location like '%Ghana%'
+GROUP BY location,population
+ORDER BY PercentPopulationInfected desc
+
+
+--Showing Countries with Highest Death
+
+SELECT location,population,MAX(CAST(total_deaths as int)) AS HighestDeath, MAX((CAST(total_deaths as int)/population))*100 AS PercentPopulationDeath
+FROM CovidDeaths$
+--Where location like '%Ghana%'
+where continent is not null
+GROUP BY location,population
+ORDER BY HighestDeath desc
+
+--Showing how many people were vaccinated in Ghana vs Total Cases
+
+SELECT CD.location, CD.date,CD.continent, CD.population,CD.new_cases,CV.total_vaccinations,CD.new_cases
+FROM CovidDeaths$ CD
+JOIN CovidVaccinations$ CV
+ON CD.location=CV.location
+and CD.Date = CV.date
+WHERE CD.continent is not null
+AND CD.location like '%Ghana%'
+GROUP BY CD.location,CD.date,CD.population,CD.continent,CD.new_cases,CV.total_vaccinations
+ORDER BY 1,2
